@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: #12151c;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 18px 18px;
+  color: #eef0f4;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Torn / perforated top edge for the receipt-style QR card */
+.receipt-edge {
+  --notch: 10px;
+  mask-image: radial-gradient(
+    circle at var(--notch) var(--notch),
+    transparent calc(var(--notch) - 1px),
+    black var(--notch)
+  );
+  mask-size: calc(var(--notch) * 2) calc(var(--notch) * 2);
+  mask-repeat: repeat-x;
+  mask-position: top left;
+}
+
+.receipt-edge::before {
+  content: "";
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+::selection {
+  background: #ff5a36;
+  color: white;
+}
+
+input:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #ff5a36;
+  outline-offset: 2px;
+}
