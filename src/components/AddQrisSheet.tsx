@@ -7,6 +7,8 @@ import { QrScanner } from "@/components/QrScanner";
 import { decodeImageQr } from "@/lib/decodeImageQr";
 import { validateQRIS } from "@/lib/qris/validator";
 import type { TranslationKey } from "@/lib/i18n";
+import { parseQRIS } from "@/lib/qris/parser";
+
 
 interface Props {
   t: (key: TranslationKey) => string;
@@ -22,11 +24,16 @@ export function AddQrisSheet({ t, onClose, onSave }: Props) {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showInput, setShowInput] = useState(false);
 
   function handleDetected(value: string) {
     setQris(value);
     setMode("idle");
     setError(null);
+    setShowInput(true);
+
+     const info = parseQRIS(value);
+     if (info.merchantName) setName(info.merchantName);
   }
 
   function handleCameraError() {
@@ -46,6 +53,9 @@ export function AddQrisSheet({ t, onClose, onSave }: Props) {
       }
       setQris(value);
       setError(null);
+
+      const info = parseQRIS(value);
+      if (info.merchantName) setName(info.merchantName);
     } catch {
       setError(t("noQrFound"));
     }
@@ -114,30 +124,34 @@ export function AddQrisSheet({ t, onClose, onSave }: Props) {
         )}
 
         <div className="flex flex-col gap-3.5">
-          <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-mist">
-              {t("qrisFieldLabel")}
-            </label>
-            <textarea
-              value={qris}
-              disabled
-              placeholder={t("qrisFieldPlaceholder")}
-              rows={2}
-              className="w-full resize-none rounded-xl border border-ink-line bg-ink-softer px-3.5 py-2.5 text-xs text-mist placeholder:text-mist/50"
-            />
-          </div>
+          {showInput && (<div>
+            <div>
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-mist">
+                {t("qrisFieldLabel")}
+              </label>
+              <textarea
+                value={qris}
+                disabled
+                placeholder={t("qrisFieldPlaceholder")}
+                rows={2}
+                className="w-full resize-none rounded-xl border border-ink-line bg-ink-softer px-3.5 py-2.5 text-xs text-mist placeholder:text-mist/50"
+              />
+            </div>
 
-          <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-mist">
-              {t("nameLabel")}
-            </label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t("namePlaceholder")}
-              className="w-full rounded-xl border border-ink-line bg-ink-softer px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-mist/50 focus:border-signal"
-            />
+            <div>
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-mist">
+                {t("nameLabel")}
+              </label>
+              <input
+                value={name}
+                disabled
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t("namePlaceholder")}
+                className="w-full rounded-xl border border-ink-line bg-ink-softer px-3.5 py-2.5 text-sm text-mist outline-none placeholder:text-mist/50 focus:border-signal"
+              />
+            </div>
           </div>
+          )}
 
           {error && <p className="text-sm text-signal">{error}</p>}
 

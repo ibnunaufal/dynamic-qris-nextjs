@@ -57,6 +57,8 @@ export function DynamicPanel({ selected, t }: Props) {
           aria-label={t("nominalLabel")}
           className="tabular-nums flex-1 bg-transparent font-display text-lg font-semibold text-white outline-none placeholder:text-mist/50"
         />
+      </div>
+      <div className="flex items-center justify-center gap-2">
         <button
           type="button"
           onClick={handleGenerate}
