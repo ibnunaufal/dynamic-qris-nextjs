@@ -15,7 +15,7 @@ interface Props {
 
 export function DynamicPanel({ selected, t }: Props) {
   const [rawAmount, setRawAmount] = useState("");
-  const [result, setResult] = useState<{ payload: string; amount: number } | null>(null);
+  const [result, setResult] = useState<{ payload: string; amount: number; name: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const amountNumber = Number(rawAmount || 0);
@@ -32,7 +32,7 @@ export function DynamicPanel({ selected, t }: Props) {
 
     try {
       const converted = convertQRIStoDynamic(selected.qris, { amount: amountNumber });
-      setResult(converted);
+      setResult({ ...converted, name: selected.name });
     } catch {
       setError(t("invalidQris"));
       setResult(null);
@@ -74,11 +74,20 @@ export function DynamicPanel({ selected, t }: Props) {
 
       <div className="flex flex-col items-center gap-4 pt-2">
         {result && (
-          <p className="tabular-nums font-display text-3xl font-semibold text-white animate-fade-in">
-            {formatRupiah(result.amount)}
-          </p>
+          <div className="flex flex-col items-center gap-1 animate-fade-in">
+            <p className="font-display text-sm font-medium text-mist">{result.name}</p>
+            <p className="tabular-nums font-display text-3xl font-semibold text-white">
+              {formatRupiah(result.amount)}
+            </p>
+          </div>
         )}
-        <QrCodeCard value={result?.payload ?? null} downloadLabel={t("downloadQr")} emptyHint={t("nominalLabel")} />
+        <QrCodeCard
+          value={result?.payload ?? null}
+          qrName={result?.name}
+          amountLabel={result ? formatRupiah(result.amount) : undefined}
+          downloadLabel={t("downloadQr")}
+          emptyHint={t("nominalLabel")}
+        />
       </div>
     </div>
   );
